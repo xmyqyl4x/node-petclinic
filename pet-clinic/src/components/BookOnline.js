@@ -1,66 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../assets/style.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+
+const initialFormData = {
+  pet_name: '',
+  pet_type: '',
+  email: '',
+  service_type: '',
+  doctor: '',
+  appointment_date: '',
+  appointment_time: '',
+  reminder: false
+};
 
 function BookOnline() {
-  const [formData, setFormData] = useState({
-    pet_name: '',
-    pet_type: '',
-    email: '',  // ensure the email state is initialized here
-    service_type: '',
-    doctor: '',
-    appointment_date: '',
-    appointmentm_time: '',
-    reminder: false
-  });
+  const [formData, setFormData] = useState(initialFormData);
+  const [reservations, setReservations] = useState([]);
 
-  // Handle changes in form inputs
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: type === 'checkbox' ? checked : value
     }));
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const apiUrl = 'http://localhost:5000/api/reservations';
-  
-    console.log('Final formData before sending:', formData); // Ensure all data is as expected
-  
+  const loadReservations = async () => {
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${API_BASE_URL}/api/reservations`);
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+      setReservations(Array.isArray(data) ? data.slice(0, 5) : []);
+    } catch (error) {
+      console.error('Error loading reservations:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadReservations();
+  }, []);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reservations`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to submit reservation');
       }
-  
-      const data = await response.json();
-      if (response.ok) {
-        alert('Reservation submitted successfully!');
-        console.log('Server response:', data);
-        setFormData({
-          firstName: '',
-          lastName: '',
-          date: '',
-          time: '',
-          guests: 1,
-          phoneNumber: ''
-        });
-      } else {
-        throw new Error(data.message || 'Failed to submit reservation');
-      }
+
+      await response.json();
+      alert('Reservation submitted successfully!');
+      setFormData(initialFormData);
+      loadReservations();
     } catch (error) {
       console.error('Error submitting reservation:', error);
-      alert('Error submitting reservation: ' + error.message);
+      alert(`Error submitting reservation: ${error.message}`);
     }
   };
 
@@ -72,26 +78,11 @@ function BookOnline() {
         <form onSubmit={handleSubmit} className="booking-form">
           <div className="form-group">
             <label htmlFor="pet_name">Pet's Name:</label>
-            <input
-              type="text"
-              id="pet_name"
-              name="pet_name"
-              required
-              className="form-control"
-              value={formData.pet_name}
-              onChange={handleChange}
-            />
+            <input type="text" id="pet_name" name="pet_name" required className="form-control" value={formData.pet_name} onChange={handleChange} />
           </div>
           <div className="form-group">
             <label htmlFor="pet_type">Pet's Type:</label>
-            <select
-              id="pet_type"
-              name="pet_type"
-              required
-              className="form-control"
-              value={formData.pet_type}
-              onChange={handleChange}
-            >
+            <select id="pet_type" name="pet_type" required className="form-control" value={formData.pet_type} onChange={handleChange}>
               <option value="">--Please choose an option--</option>
               <option value="dog">Dog</option>
               <option value="cat">Cat</option>
@@ -100,25 +91,11 @@ function BookOnline() {
           </div>
           <div className="form-group">
             <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              className="form-control"
-              value={formData.email}
-              onChange={handleChange}
-            />
+            <input type="email" id="email" name="email" required className="form-control" value={formData.email} onChange={handleChange} />
           </div>
           <div className="form-group">
             <label htmlFor="service_type">Service Type:</label>
-            <select
-              id="service_type"
-              name="service_type"
-              className="form-control"
-              value={formData.service_type}
-              onChange={handleChange}
-            >
+            <select id="service_type" name="service_type" className="form-control" value={formData.service_type} onChange={handleChange}>
               <option value="">--Please choose a service--</option>
               <option value="consultation">Consultation</option>
               <option value="spa_treatment">Spa Treatment</option>
@@ -126,13 +103,7 @@ function BookOnline() {
           </div>
           <div className="form-group">
             <label htmlFor="doctor">Preferred Doctor:</label>
-            <select
-              id="doctor"
-              name="doctor"
-              className="form-control"
-              value={formData.doctor}
-              onChange={handleChange}
-            >
+            <select id="doctor" name="doctor" className="form-control" value={formData.doctor} onChange={handleChange}>
               <option value="">--Please choose a doctor--</option>
               <option value="dr_smith">Dr. Smith</option>
               <option value="dr_jones">Dr. Jones</option>
@@ -176,6 +147,19 @@ function BookOnline() {
           </div>
           <input type="submit" value="Book Appointment" className="btn btn-primary book-button" />
         </form>
+
+        {reservations.length > 0 && (
+          <div style={{ marginTop: '24px' }}>
+            <h3>Recent Reservations</h3>
+            <ul>
+              {reservations.map((reservation) => (
+                <li key={reservation.id}>
+                  {reservation.pet_name} ({reservation.pet_type}) - {reservation.appointment_date}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );

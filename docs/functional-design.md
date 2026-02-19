@@ -1,212 +1,75 @@
-# Node Petclinic Functional Design Document
+# Node Petclinic Functional Design
 
-## 1. Purpose and scope
+## Overview
+Node Petclinic is a full-stack clinic website and booking application.
 
-This document describes the functional design of the Node Petclinic application as implemented in this repository. It covers user-facing behavior, major modules, runtime interactions, data flow, and current functional constraints.
+- Frontend (`pet-clinic`): marketing pages + online booking UI
+- Backend (`myserver`): REST API for reservations
+- Database: PostgreSQL (`node-petclinic-db`) using credentials `pwere` / `pwere`
 
-Scope includes:
-- React frontend in `pet-clinic/`
-- Express/MongoDB backend in `myserver/`
+## Core functional modules
 
-Out of scope:
-- Deep non-functional architecture (SRE, infra as code)
-- Regulatory/compliance implementation details
+### 1. Site content and navigation
+- Home, special offers, services, locations, and privacy policy content pages.
+- Service detail pages rendered via client routes.
 
-## 2. Product intent
+### 2. Booking module
+- Users submit pet reservation data from the `BookOnline` form.
+- Required functional data captured:
+  - pet name/type
+  - email
+  - service type
+  - doctor
+  - appointment date/time
+  - reminder preference
 
-Node Petclinic provides a public-facing clinic website plus online appointment booking. It is designed as a lightweight full-stack application where prospective pet owners can discover services and submit reservation requests.
+### 3. Reservation retrieval module
+- Frontend loads and renders latest reservations from API.
+- Displays recent reservation list under booking form.
 
-## 3. Actors and user goals
+### 4. API module
+- `POST /api/reservations`: inserts a reservation row in PostgreSQL.
+- `GET /api/reservations`: returns reservations sorted by creation time.
+- `GET /api/health`: validates DB connectivity.
 
-### Primary actors
-- **Pet owner / visitor**
-  - Browse clinic information
-  - Review promotions and services
-  - Submit an online booking request
-  - Find location/contact details
+## Data design
 
-- **Clinic staff (indirect actor via API consumption)**
-  - Retrieve submitted reservation records (through API)
+### Database
+- Name: `node-petclinic-db`
+- User: `pwere`
+- Password: `pwere`
 
-## 4. Functional modules
+### Table: `reservations`
+- `id BIGSERIAL PRIMARY KEY`
+- `pet_name VARCHAR(120) NOT NULL`
+- `pet_type VARCHAR(60) NOT NULL`
+- `email VARCHAR(255) NOT NULL`
+- `service_type VARCHAR(120)`
+- `doctor VARCHAR(120)`
+- `appointment_date DATE NOT NULL`
+- `appointment_time TIME NOT NULL`
+- `reminder BOOLEAN NOT NULL DEFAULT FALSE`
+- `created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
 
-## 4.1 Frontend shell and navigation
+Indexes:
+- `idx_reservations_appointment_date`
+- `idx_reservations_created_at`
 
-**Responsibilities**
-- Render global page shell (navbar, footer).
-- Render a mixed one-page/route-driven experience.
+## Runtime flow
+1. User opens frontend and fills booking form.
+2. Frontend POSTs payload to backend API.
+3. Backend inserts into PostgreSQL.
+4. Frontend refreshes recent reservations list from GET API.
 
-**Key behaviors**
-- Main app displays `Navbar`, `Home`, `SpecialOffers`, `Services`, `BookOnline`, `Locations`, and `Footer` on the root view.
-- Route-based detail pages are exposed for:
-  - `/spa-and-wellness`
-  - `/surgery`
-  - `/privacy-policy`
+## DB provisioning and migrations
+- `npm run db:create`: creates DB role/database artifacts.
+- `npm run db:migrate`: creates required schema objects.
+- `npm run db:init`: runs both in sequence.
 
-**Primary files**
-- `pet-clinic/src/App.js`
-- `pet-clinic/src/components/Navbar.js`
-- `pet-clinic/src/components/Footer.js`
+## Configuration
+All backend DB configuration is environment-driven with defaults to:
+- `PGDATABASE=node-petclinic-db`
+- `PGUSER=pwere`
+- `PGPASSWORD=pwere`
 
-## 4.2 Marketing/content modules
-
-### Home
-- Presents clinic positioning and call-to-action.
-- “Book Online” button anchors to booking section.
-
-### Special Offers
-- Displays promotional cards and pricing/content blocks.
-
-### Services
-- Bootstrap carousel with two highlighted services.
-- Uses client-side links to detail routes.
-
-### Service detail pages
-- Dedicated long-form pages for Spa/Wellness and Surgery.
-- Include descriptive service content, images, and review blocks.
-
-### Locations
-- Shows address/phone details and embedded Google Maps iframes.
-
-**Primary files**
-- `pet-clinic/src/components/Home.js`
-- `pet-clinic/src/components/SpecialOffers.js`
-- `pet-clinic/src/components/Services.js`
-- `pet-clinic/src/components/SpaAndWellness.js`
-- `pet-clinic/src/components/Surgery.js`
-- `pet-clinic/src/components/Locations.js`
-
-## 4.3 Booking and reservation submission module
-
-**Responsibilities**
-- Collect booking details from users.
-- Send reservation data to backend API.
-- Inform user of submission success/failure.
-
-**Input fields (current UI)**
-- Pet name
-- Pet type
-- Email
-- Service type
-- Preferred doctor
-- Appointment date
-- Appointment time
-- Reminder preference
-
-**Workflow**
-1. User fills out booking form.
-2. On submit, frontend performs `POST` to `http://localhost:5000/api/reservations` with JSON payload.
-3. On success (`2xx`), success alert is shown.
-4. On failure, error alert is shown.
-
-**Primary file**
-- `pet-clinic/src/components/BookOnline.js`
-
-## 4.4 Privacy and policy module
-
-- Provides static terms/privacy content available at `/privacy-policy`.
-
-**Primary file**
-- `pet-clinic/src/components/PrivacyPolicy.js`
-
-## 4.5 Backend API module
-
-**Responsibilities**
-- Accept reservation submissions.
-- Persist records in MongoDB.
-- Return reservation list.
-
-**Endpoints**
-- `GET /`
-  - Basic service response used as lightweight health check.
-
-- `POST /api/reservations`
-  - Accepts JSON payload and inserts into MongoDB collection `reservations`.
-  - Returns Mongo insert result.
-
-- `GET /api/reservations`
-  - Returns all reservation documents.
-
-**Primary file**
-- `myserver/server.js`
-
-## 5. Data design
-
-## 5.1 Reservation entity (as submitted)
-
-The effective reservation document shape is flexible (schemaless insert), but intended fields include:
-- `pet_name: string`
-- `pet_type: string`
-- `email: string`
-- `service_type: string`
-- `doctor: string`
-- `appointment_date: string (date)`
-- `appointment_time: string (time)`
-- `reminder: boolean`
-
-## 5.2 Storage
-- Database: `test`
-- Collection: `reservations`
-- Data store: MongoDB
-
-## 6. Runtime interaction design
-
-## 6.1 Successful booking flow
-1. Browser loads frontend.
-2. User navigates to “Book Online”.
-3. User submits form.
-4. Frontend sends JSON to backend endpoint.
-5. Backend validates request shape minimally (implicit) and inserts into MongoDB.
-6. Backend returns success response.
-7. Frontend shows success alert.
-
-## 6.2 Reservation retrieval flow
-1. Client/tool calls `GET /api/reservations`.
-2. Backend reads all records from MongoDB.
-3. API returns JSON array.
-
-## 7. Dependencies between modules
-
-- Booking module depends on backend API reachability at hardcoded localhost URL.
-- API module depends on MongoDB connectivity during startup.
-- Service pages and carousel depend on static assets in `public/`.
-- Routing behavior depends on BrowserRouter setup in `src/index.js`.
-
-## 8. Functional limitations and risks (as-is)
-
-- Backend MongoDB URI is embedded as placeholder text; runtime requires manual replacement.
-- No explicit server-side validation/sanitization for reservation payloads.
-- Frontend booking model has naming mismatch (`appointmentm_time` init key vs `appointment_time` input key).
-- Form reset object in booking component does not align with submitted field model.
-- No authentication/authorization on reservation retrieval endpoint.
-- CORS is permissive by default.
-
-## 9. Recommended near-term functional improvements
-
-1. **Configuration hygiene**
-   - Externalize DB URI and API base URL into environment variables.
-
-2. **Data quality**
-   - Introduce frontend validation + backend schema validation.
-   - Normalize reservation field names.
-
-3. **Operational usability**
-   - Add API health endpoint with dependency checks.
-   - Add structured logging and error IDs.
-
-4. **Security**
-   - Restrict CORS to trusted origins.
-   - Add rate limiting for reservation submission.
-
-5. **Product capability**
-   - Add admin-facing reservation list UI.
-   - Add statuses (new/confirmed/cancelled) for appointments.
-
-## 10. Acceptance criteria for this functional baseline
-
-The current system functionally satisfies baseline behavior when:
-- Frontend loads and renders all major sections.
-- User can navigate to service detail pages and privacy page.
-- Booking form submission reaches backend.
-- Reservation record is inserted into MongoDB.
-- Reservations can be retrieved via GET API.
+See `myserver/.env.example` for full configuration.

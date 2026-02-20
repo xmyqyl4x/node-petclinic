@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { pool, testConnection } = require('./config/db');
+const ownersRouter = require('./routes/owners');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Hello from the PostgreSQL-powered server');
 });
+
+app.use('/api/owners', ownersRouter);
 
 app.get('/api/health', async (req, res) => {
   try {

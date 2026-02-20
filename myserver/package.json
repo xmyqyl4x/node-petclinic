@@ -8,7 +8,7 @@
     "dev": "node server.js",
     "db:create": "node scripts/create-database.js",
     "db:migrate": "node scripts/run-migrations.js",
-    "db:init": "npm run db:create && npm run db:migrate"
+    "db:init": "node scripts/init-database.js"
   },
   "author": "",
   "license": "ISC",

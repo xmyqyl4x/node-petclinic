@@ -10,15 +10,13 @@ Node Petclinic is a full-stack clinic website and booking application.
 ## Core functional modules
 
 ### 1. Site content and navigation
-- Home, services, locations, and privacy policy content pages.
-- Service detail pages rendered via client routes.
+- Home, booking, and privacy policy content pages.
 
 ### 2. Booking module
 - Users submit pet reservation data from the `BookOnline` form.
 - Required functional data captured:
   - pet name/type
   - email
-  - service type
   - doctor
   - appointment date/time
   - reminder preference
@@ -44,7 +42,6 @@ Node Petclinic is a full-stack clinic website and booking application.
 - `pet_name VARCHAR(120) NOT NULL`
 - `pet_type VARCHAR(60) NOT NULL`
 - `email VARCHAR(255) NOT NULL`
-- `service_type VARCHAR(120)`
 - `doctor VARCHAR(120)`
 - `appointment_date DATE NOT NULL`
 - `appointment_time TIME NOT NULL`

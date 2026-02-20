@@ -2,14 +2,11 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
-import Services from './components/Services';
 import BookOnline from './components/BookOnline';
 import Locations from './components/Locations';
 import Footer from './components/Footer';
 import './assets/style.css';
 import { Route, Routes } from 'react-router-dom';
-import SpaAndWellness from './components/SpaAndWellness';
-import Surgery from './components/Surgery';
 import PrivacyPolicy from './components/PrivacyPolicy';
 
 function App() {
@@ -17,11 +14,6 @@ function App() {
       <div className="App">
         <Navbar />
         <Home />
-        <Services />
-        <Routes>
-          <Route path="/spa-and-wellness" element={<SpaAndWellness />} />
-          <Route path="/surgery" element={<Surgery />} />
-        </Routes>
         <BookOnline/>
         <Locations />
         <Footer />

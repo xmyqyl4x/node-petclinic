@@ -27,7 +27,6 @@ app.post('/api/reservations', async (req, res) => {
     pet_name,
     pet_type,
     email,
-    service_type,
     doctor,
     appointment_date,
     appointment_time,
@@ -40,18 +39,16 @@ app.post('/api/reservations', async (req, res) => {
         pet_name,
         pet_type,
         email,
-        service_type,
         doctor,
         appointment_date,
         appointment_time,
         reminder
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING id, pet_name, pet_type, email, service_type, doctor, appointment_date, appointment_time, reminder, created_at`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, pet_name, pet_type, email, doctor, appointment_date, appointment_time, reminder, created_at`,
       [
         pet_name,
         pet_type,
         email,
-        service_type,
         doctor,
         appointment_date,
         appointment_time,
@@ -68,7 +65,7 @@ app.post('/api/reservations', async (req, res) => {
 app.get('/api/reservations', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, pet_name, pet_type, email, service_type, doctor, appointment_date, appointment_time, reminder, created_at
+      `SELECT id, pet_name, pet_type, email, doctor, appointment_date, appointment_time, reminder, created_at
        FROM reservations
        ORDER BY created_at DESC`
     );

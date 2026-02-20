@@ -7,7 +7,6 @@ const initialFormData = {
   pet_name: '',
   pet_type: '',
   email: '',
-  service_type: '',
   doctor: '',
   appointment_date: '',
   appointment_time: '',
@@ -92,14 +91,6 @@ function BookOnline() {
           <div className="form-group">
             <label htmlFor="email">Email:</label>
             <input type="email" id="email" name="email" required className="form-control" value={formData.email} onChange={handleChange} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="service_type">Service Type:</label>
-            <select id="service_type" name="service_type" className="form-control" value={formData.service_type} onChange={handleChange}>
-              <option value="">--Please choose a service--</option>
-              <option value="consultation">Consultation</option>
-              <option value="spa_treatment">Spa Treatment</option>
-            </select>
           </div>
           <div className="form-group">
             <label htmlFor="doctor">Preferred Doctor:</label>

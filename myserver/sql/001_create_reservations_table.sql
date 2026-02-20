@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS reservations (
   pet_name VARCHAR(120) NOT NULL,
   pet_type VARCHAR(60) NOT NULL,
   email VARCHAR(255) NOT NULL,
-  service_type VARCHAR(120),
   doctor VARCHAR(120),
   appointment_date DATE NOT NULL,
   appointment_time TIME NOT NULL,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { datadogLogs } from '@datadog/browser-logs';
 import '../assets/style.css';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -24,9 +25,21 @@ function AddOwner() {
     setError('');
 
     if (!form.first_name || !form.last_name) {
+      datadogLogs.logger.warn('Owner form validation failed', {
+        missing_fields: [
+          !form.first_name && 'first_name',
+          !form.last_name && 'last_name',
+        ].filter(Boolean),
+      });
       setError('First name and last name are required.');
       return;
     }
+
+    datadogLogs.logger.info('Owner creation requested', {
+      city: form.city,
+      has_address: !!form.address,
+      has_telephone: !!form.telephone,
+    });
 
     try {
       const res = await fetch(`${API_BASE}/api/owners`, {
@@ -40,9 +53,16 @@ function AddOwner() {
         throw new Error(data.error || 'Failed to add owner');
       }
 
+      datadogLogs.logger.info('Owner created successfully', {
+        http_status: res.status,
+      });
+
       // Navigate back to find owners and trigger a search to show all owners
       navigate('/owners?showAll=true');
     } catch (err) {
+      datadogLogs.logger.error('Owner creation failed', {
+        error: err.message,
+      });
       setError(err.message);
     }
   };

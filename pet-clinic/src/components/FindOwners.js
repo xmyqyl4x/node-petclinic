@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { datadogLogs } from '@datadog/browser-logs';
 import '../assets/style.css';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -12,14 +13,26 @@ function FindOwners() {
 
   const handleFind = async (e) => {
     e.preventDefault();
+    const query = lastName ? `?lastName=${encodeURIComponent(lastName)}` : '';
+    datadogLogs.logger.info('Owner search initiated', {
+      search_term: lastName || '(all)',
+      url: `${API_BASE}/api/owners${query}`,
+    });
     try {
-      const query = lastName ? `?lastName=${encodeURIComponent(lastName)}` : '';
       const res = await fetch(`${API_BASE}/api/owners${query}`);
       const data = await res.json();
       setOwners(data);
       setSearched(true);
+      datadogLogs.logger.info('Owner search completed', {
+        search_term: lastName || '(all)',
+        results_count: data.length,
+        http_status: res.status,
+      });
     } catch (err) {
-      console.error('Error fetching owners:', err);
+      datadogLogs.logger.error('Owner search failed', {
+        search_term: lastName || '(all)',
+        error: err.message,
+      });
     }
   };
 

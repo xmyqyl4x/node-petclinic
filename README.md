@@ -1,43 +1,46 @@
-#  Pet Clinic Web Application
+# Node Petclinic
 
-A full-stack web application for managing pet clinic services and online reservations.  
-This project was developed as a **portfolio project** to demonstrate full-stack development skills.
+Node Petclinic is a simplified clinic website composed of:
+- **React frontend** in `pet-clinic/`
+- **Express backend** in `myserver/`
+- **PostgreSQL** connectivity for backend health checks
 
-##  Features
-- Online reservation system
-- Responsive and user-friendly UI
-- RESTful API
-- MongoDB database integration
-- Clean and modular project structure
+## Current frontend scope
+- Home page
+- Privacy Policy page
+- Footer links/social links
 
-## Tech Stack
+## Current backend scope
+- `GET /` basic server message
+- `GET /api/health` database connectivity check
 
-**Frontend**
-- React
-- JavaScript
-- HTML5
-- CSS3
+## PostgreSQL defaults
+- Database: `node-petclinic-db`
+- Username: `pwere`
+- Password: `pwere`
 
-**Backend**
-- Node.js
-- Express.js
-- MongoDB
+Environment variables (`myserver/.env`):
+```env
+PORT=5000
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=node-petclinic-db
+PGUSER=pwere
+PGPASSWORD=pwere
+```
 
-## Project Structure
+## Run locally
+### Backend
+```bash
+cd myserver
+npm install
+cp .env.example .env
+npm start
+```
 
-pet-clinic/
-│
-├── pet-clinic/ # React frontend
-├── myserver/ # Node.js backend
-├── .gitignore
-├── package.json
-└── README.md
-
-## This project was created to practice and showcase:
-
-- Full-stack web development
-- REST API design
-- Frontend–backend integration
-
-
-
+### Frontend
+```bash
+cd pet-clinic
+npm install
+npm start
+```

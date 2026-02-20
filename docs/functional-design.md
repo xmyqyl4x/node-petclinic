@@ -10,7 +10,7 @@ Node Petclinic is a full-stack clinic website and booking application.
 ## Core functional modules
 
 ### 1. Site content and navigation
-- Home, special offers, services, locations, and privacy policy content pages.
+- Home, services, locations, and privacy policy content pages.
 - Service detail pages rendered via client routes.
 
 ### 2. Booking module

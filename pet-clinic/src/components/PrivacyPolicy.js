@@ -15,11 +15,11 @@ const PrivacyPolicy = () => {
         </p>
         <h3 className="section-title">Data Collection:</h3>
         <p>
-          We may collect personal data such as your name, email address, phone number, and details about your pets when you make an appointment, contact us, or subscribe to our newsletter. Our website may also automatically collect non-personal information such as your IP address, browser type, and browsing patterns through cookies or similar technologies.
+          We may collect personal data such as your name, email address, phone number, and details about your pets when you contact us, or subscribe to our newsletter. Our website may also automatically collect non-personal information such as your IP address, browser type, and browsing patterns through cookies or similar technologies.
         </p>
         <h3 className="section-title">Use of Information:</h3>
         <p>
-          We strive to personalize your experience on our website based on the information you provide. We may also use your information to send you promotional emails or updates, and to process appointments and orders.
+          We strive to personalize your experience on our website based on the information you provide. We may also use your information to send you promotional emails or updates, and to provide requested website communications and updates.
         </p>
         <h3 className="section-title">Information Sharing:</h3>
         <p>

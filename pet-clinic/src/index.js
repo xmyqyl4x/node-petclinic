@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { datadogRum } from '@datadog/browser-rum';
 import { reactPlugin } from '@datadog/browser-rum-react';
+import { datadogLogs } from '@datadog/browser-logs';
 
 datadogRum.init({
   applicationId: '17247517-f9b6-4e25-9451-26aac0a7e677',
@@ -20,6 +21,20 @@ datadogRum.init({
   sessionReplaySampleRate: 20,
   defaultPrivacyLevel: 'mask-user-input',
   plugins: [reactPlugin({ router: true })],
+});
+
+datadogLogs.init({
+  clientToken: 'pubd8c8cc6cf8c8ace811d48aac63e30c99',
+  site: 'datadoghq.com',
+  service: 'spring-petclinic',
+  env: 'dev',
+  forwardErrorsToLogs: true,
+  forwardConsoleLogs: 'all',
+  sessionSampleRate: 100,
+});
+
+datadogLogs.logger.info('Application initialized', {
+  api_base: process.env.REACT_APP_API_URL || 'http://localhost:5000',
 });
 
 const container = document.getElementById('root');

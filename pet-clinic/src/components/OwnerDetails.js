@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { datadogLogs } from '@datadog/browser-logs';
 import '../assets/style.css';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -11,12 +12,27 @@ function OwnerDetails() {
 
   useEffect(() => {
     const fetchOwner = async () => {
+      datadogLogs.logger.info('Fetching owner details', { owner_id: id });
       try {
         const res = await fetch(`${API_BASE}/api/owners/${id}`);
-        if (!res.ok) throw new Error('Owner not found');
+        if (!res.ok) {
+          datadogLogs.logger.warn('Owner not found', {
+            owner_id: id,
+            http_status: res.status,
+          });
+          throw new Error('Owner not found');
+        }
         const data = await res.json();
         setOwner(data);
+        datadogLogs.logger.info('Owner details loaded', {
+          owner_id: id,
+          city: data.city,
+        });
       } catch (err) {
+        datadogLogs.logger.error('Failed to fetch owner details', {
+          owner_id: id,
+          error: err.message,
+        });
         setError(err.message);
       }
     };
